@@ -326,7 +326,25 @@ config.checkEnvVariables();
 
 // Listen for requests :)
 const http = require("http");
-const server = http.createServer(app);
+const https = require("https");
+const fs = require("fs");
+
+let server;
+const certPath = path.join(path.resolve(), "server.crt");
+const keyPath = path.join(path.resolve(), "server.key");
+
+if (fs.existsSync(certPath) && fs.existsSync(keyPath)) {
+  const sslOptions = {
+    cert: fs.readFileSync(certPath),
+    key: fs.readFileSync(keyPath)
+  };
+  server = https.createServer(sslOptions, app);
+  console.log("HTTPS mode: using server.crt + server.key");
+} else {
+  server = http.createServer(app);
+  console.log("HTTP mode: no SSL cert found");
+}
+
 server.on("error", (err) => {
   if (err.code === "EADDRINUSE") {
     console.error(`Port ${config.port} is already in use.`);
@@ -336,7 +354,8 @@ server.on("error", (err) => {
   process.exit(1);
 });
 var listener = server.listen(config.port, function () {
-  console.log(`The app is listening on port ${server.address().port}`);
+  const protocol = server instanceof https.Server ? "https" : "http";
+  console.log(`The app is listening on port ${server.address().port} (${protocol})`);
   if (
     Object.keys(config.personas).length == 0 &&
     config.appUrl &&
