@@ -224,19 +224,18 @@ app.get("/health", async (req, res) => {
     }
   };
 
-  // Self-test: call our own webhook verify endpoint
+  // Self-test: hit our own webhook verify endpoint via 127.0.0.1
   try {
     const fetch = require("node-fetch");
     const testChallenge = "health_check_" + Date.now();
-    const url =
-      `http://localhost:${config.port}/webhook` +
+    const qs =
       `?hub.mode=subscribe` +
       `&hub.verify_token=${encodeURIComponent(config.verifyToken)}` +
       `&hub.challenge=${testChallenge}`;
-    const response = await fetch(url);
+    const response = await fetch(`http://127.0.0.1:${config.port}/webhook${qs}`);
     const body = await response.text();
-    checks.webhook.reachable = response.status === 200;
-    checks.webhook.verify_token_check = body === testChallenge;
+    checks.webhook.reachable = true;
+    checks.webhook.verify_token_check = response.status === 200 && body === testChallenge;
   } catch (err) {
     checks.webhook.error = err.message;
   }
