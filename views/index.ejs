@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Messenger Bot</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 60px auto; padding: 0 20px; color: #333; }
+    h1 { color: #0084ff; }
+    code { background: #f4f4f4; padding: 2px 6px; border-radius: 4px; }
+    .status { display: inline-block; background: #e6f4ea; color: #1e8e3e; padding: 4px 12px; border-radius: 12px; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <h1>Messenger Bot</h1>
+  <p><span class="status">&#x2705; Webhook is live</span></p>
+  <p>Your bot is running. To connect it to Facebook Messenger:</p>
+  <ol>
+    <li>Set up your <a href="https://developers.facebook.com/apps" target="_blank">Facebook App</a> and subscribe to a Page.</li>
+    <li>Set <code>VERIFY_TOKEN</code>, <code>PAGE_ACCESS_TOKEN</code>, and <code>APP_SECRET</code> in your <code>.env</code> file.</li>
+    <li>Point your webhook to <code>/webhook</code> on this server.</li>
+    <li>Visit <code>/profile?mode=all&amp;verify_token=YOUR_TOKEN</code> to configure the Messenger Profile.</li>
+  </ol>
+</body>
+</html>

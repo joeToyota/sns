@@ -1,0 +1,19 @@
+{
+  "get_started": {
+    "greeting": "Hi %s! How can I help you today?",
+    "greeting_no_name": "Hi there! How can I help you today?"
+  },
+  "echo": {
+    "with_name": "Hi %s, you said: \"%s\"",
+    "no_name": "You said: \"%s\""
+  },
+  "help": {
+    "message": "You can send me any message and I'll reply. Try saying 'hello'!"
+  },
+  "postback": {
+    "unknown": "You triggered: %s"
+  },
+  "private_reply": {
+    "message": "Thanks for reaching out! Send us a message and we'll get back to you."
+  }
+}
