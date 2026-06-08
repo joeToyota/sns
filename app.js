@@ -206,6 +206,48 @@ function receiveAndReturn(user, webhookEvent, isUserRef) {
   return receiveMessage.handleMessage();
 }
 
+// Health check — verifies webhook config and reachability
+app.get("/health", async (req, res) => {
+  const checks = {
+    env: {
+      APP_ID: !!config.appId,
+      APP_SECRET: !!config.appSecret,
+      PAGE_ID: !!config.pageId,
+      PAGE_ACCESS_TOKEN: !!config.pageAccesToken,
+      VERIFY_TOKEN: !!config.verifyToken,
+      APP_URL: !!config.appUrl
+    },
+    webhook: {
+      url: config.webhookUrl || "(not set)",
+      reachable: false,
+      verify_token_check: false
+    }
+  };
+
+  // Self-test: call our own webhook verify endpoint
+  try {
+    const fetch = require("node-fetch");
+    const testChallenge = "health_check_" + Date.now();
+    const url =
+      `http://localhost:${config.port}/webhook` +
+      `?hub.mode=subscribe` +
+      `&hub.verify_token=${encodeURIComponent(config.verifyToken)}` +
+      `&hub.challenge=${testChallenge}`;
+    const response = await fetch(url);
+    const body = await response.text();
+    checks.webhook.reachable = response.status === 200;
+    checks.webhook.verify_token_check = body === testChallenge;
+  } catch (err) {
+    checks.webhook.error = err.message;
+  }
+
+  const envOk = Object.values(checks.env).every(Boolean);
+  const webhookOk = checks.webhook.reachable && checks.webhook.verify_token_check;
+  const status = envOk && webhookOk ? "ok" : "degraded";
+
+  res.status(status === "ok" ? 200 : 503).json({ status, checks });
+});
+
 // Set up your App's Messenger Profile
 app.get("/profile", (req, res) => {
   let token = req.query["verify_token"];
